@@ -166,6 +166,7 @@ async function main(): Promise<void> {
   const worker = async () => {
     while (idx < candidates.length) {
       const c = candidates[idx++];
+      if (!c) break;
       const sha = await headSha(c.full, c.branch);
       if (!sha) {
         console.warn(`skip ${c.full}: no commit`);

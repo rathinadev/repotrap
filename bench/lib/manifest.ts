@@ -66,7 +66,7 @@ export function parseManifest(text: string, name = 'manifest'): ManifestEntry[] 
   const seen = new Set<string>();
   const lines = text.split(/\r?\n/);
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+    const line = lines[i] ?? '';
     if (line.trim() === '') continue;
     const where = `${name}:${i + 1}`;
     let raw: unknown;

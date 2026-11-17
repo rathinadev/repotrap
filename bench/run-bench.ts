@@ -106,6 +106,7 @@ async function main(): Promise<number> {
     while (next < selected.length) {
       const i = next++;
       const entry = selected[i];
+      if (!entry) break;
       const outcome = await runScanner(scannerOpts, targetFor(entry));
       if (outcome.report && !scannerInfo) scannerInfo = { tool: outcome.report.tool, version: outcome.report.version };
       const r = toResult(entry, outcome, redact);

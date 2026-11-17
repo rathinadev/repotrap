@@ -9,9 +9,17 @@
     "node": ">=24"
   },
   "scripts": {
-    "test": "node --test \"bench/test/*.test.ts\"",
+    "test": "node --test \"bench/test/*.test.ts\" \"packages/*/test/*.test.ts\"",
     "bench": "node bench/run-bench.ts",
     "corpus:benign": "node bench/build-benign.ts",
-    "corpus:validate": "node bench/validate-manifest.ts corpus/benign.jsonl"
-  }
+    "corpus:validate": "node bench/validate-manifest.ts corpus/benign.jsonl",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "typescript": "^7.0.2"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }

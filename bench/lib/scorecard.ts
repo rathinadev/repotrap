@@ -146,7 +146,7 @@ export function buildScorecard(
   }
 
   const durations = ok.map((r) => r.durationMs).sort((a, b) => a - b);
-  const medianDurationMs = durations.length === 0 ? null : durations[Math.floor(durations.length / 2)];
+  const medianDurationMs = durations[Math.floor(durations.length / 2)] ?? null;
 
   return {
     generatedAt: new Date().toISOString(),
@@ -258,6 +258,7 @@ export function renderMarkdown(sc: Scorecard, problems: string[] = []): string {
     lines.push('| Rule | Malicious hits | Benign hits | Technique-copy hits | Precision |', '|---|---|---|---|---|');
     for (const id of ruleIds) {
       const s = sc.rules[id];
+      if (!s) continue;
       lines.push(`| ${cell(id)} | ${s.maliciousHits} | ${s.benignHits} | ${s.techniqueCopyHits} | ${s.precision === null ? 'n/a' : pct(s.precision)} |`);
     }
     lines.push('');
@@ -266,7 +267,7 @@ export function renderMarkdown(sc: Scorecard, problems: string[] = []): string {
   const techIds = Object.keys(sc.techniques).sort();
   if (techIds.length > 0) {
     lines.push('| Technique | Rule fired on tagged malicious repos |', '|---|---|');
-    for (const t of techIds) lines.push(`| ${cell(t)} | ${fmt(sc.techniques[t])} |`);
+    for (const t of techIds) lines.push(`| ${cell(t)} | ${fmt(sc.techniques[t] ?? null)} |`);
     lines.push('');
   }
 
