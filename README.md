@@ -52,6 +52,6 @@ npm test
 
 ## License
 
-repotrap is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE.md). You may use, modify and share it for personal, research, educational and other noncommercial purposes. Commercial use, including selling it, offering it as a paid service, or using it within a for-profit business, is not permitted without a separate commercial license from the maintainer.
+repotrap is licensed under the [PolyForm Shield License 1.0.0](LICENSE.md). You may use, modify and share it for any purpose, including internal use within commercial organisations, except to provide a product or service that competes with repotrap. Selling repotrap, offering it as a hosted or paid service, or incorporating it into a competing product, whether paid or free, is not permitted without a separate license from the maintainer.
 
 This is a source-available license, not an OSI-approved open-source license.
