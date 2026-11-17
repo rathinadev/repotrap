@@ -1,0 +1,17 @@
+{
+  "name": "repotrap",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Static checker that tells you if a GitHub repo is a trap before you clone or open it",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "node --test \"bench/test/*.test.ts\"",
+    "bench": "node bench/run-bench.ts",
+    "corpus:benign": "node bench/build-benign.ts",
+    "corpus:validate": "node bench/validate-manifest.ts corpus/benign.jsonl"
+  }
+}

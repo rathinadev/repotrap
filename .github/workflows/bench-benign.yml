@@ -1,0 +1,82 @@
+# Benchmarks the scanner against ordinary, legitimate repos (corpus/benign.jsonl)
+# to measure false alarms. Safe on GitHub-hosted runners: the repos are normal
+# public projects read through the GitHub API. The malicious set never runs
+# here; see bench/vm/ for the isolated self-hosted setup.
+
+name: bench-benign
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Approximate number of repos to scan (0 = all)"
+        default: "150"
+  pull_request:
+    paths:
+      - "packages/**"
+      - "bench/**"
+      - "corpus/benign.jsonl"
+  schedule:
+    - cron: "17 3 * * 1" # weekly full run, Mondays 03:17 UTC
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bench-benign-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      - name: Check that the scanner exists
+        id: scanner
+        run: |
+          if [ -f packages/cli/package.json ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Scanner not built yet (packages/cli is missing); skipping the benchmark."
+          fi
+
+      - name: Build scanner
+        if: steps.scanner.outputs.ready == 'true'
+        run: |
+          npm ci
+          npm run build
+
+      - name: Run benign benchmark
+        if: steps.scanner.outputs.ready == 'true'
+        env:
+          # A personal token raises the API limit for full runs; falls back to the workflow token.
+          GITHUB_TOKEN: ${{ secrets.BENCH_GITHUB_TOKEN || github.token }}
+          LIMIT: ${{ github.event_name == 'schedule' && '0' || inputs.limit || '150' }}
+        run: |
+          node bench/run-bench.ts \
+            --manifest corpus/benign.jsonl \
+            --scanner node --scanner-arg packages/cli/dist/repotrap.js --scanner-arg scan \
+            --limit "$LIMIT" --seed pr-sample \
+            --baseline bench/baseline/benign-scorecard.json \
+            --max-false-alarm-rate 0.05 \
+            --out bench-results
+
+      - name: Upload scorecard
+        if: always() && steps.scanner.outputs.ready == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: benign-scorecard
+          path: |
+            bench-results/scorecard.json
+            bench-results/scorecard.md
+            bench-results/results.jsonl
+          if-no-files-found: ignore
+          retention-days: 30
