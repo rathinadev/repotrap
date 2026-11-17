@@ -1,0 +1,14 @@
+{
+  "name": "@repotrap/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "repotrap detection engine: rules, scoring and report model. Pure, no I/O.",
+  "license": "PolyForm-Shield-1.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
